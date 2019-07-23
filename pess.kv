@@ -1,5 +1,6 @@
 #:import rgba kivy.utils.get_color_from_hex
 
+
 <MenuButton@ButtonBehavior+Label>:
     canvas.before:
         Color:
@@ -13,13 +14,10 @@
         Rectangle:
             pos: self.x + self.height / 2, self.y
             size: self.width - self.height, self.height
-<Button>:
-    background_color: 0,0,0,0
-##############################
-######## TRACKER LOOK ########
 
-##############################
-######## TRACKER LOOK ########
+<TrackerButton@Button>:
+    background_color: 0,0,0,0
+
 <ScreenGenerator>:
     Menu:
         name: 'menu'
@@ -67,8 +65,10 @@
         ScrollView:
             BoxLayout:
                 id: track
+                spacing: 7
                 orientation: 'vertical'
-                font_size: 15
+                padding: 20
+                spacing: 7
                 size_hint_y: None
                 height: self.minimum_height
         BoxLayout:
@@ -90,65 +90,49 @@
     size_hint_y: None
     height: 45
 
-    Button:
+
+    canvas.before:
+        Color:
+            rgba: 0.1, 0.5, 0.7, 1
+        Rectangle:
+            pos: self.pos[0] + self.height/2, self.pos[1]
+            size: self.size[0] - self.height, self.height
+        Ellipse:
+            pos: self.pos[0], self.pos[1]
+            size: self.height, self.height
+        Ellipse:
+            pos: self.pos[0] + self.width - self.height, self.pos[1]
+            size: self.height, self.height
+
+    TrackerButton:
         text: '[b]X[/b]'
         markup: True
         size_hint_x: None
+        width: 60
+        color: 1, 1, 1, .4
         on_release: app.root.get_screen('track').delete_storage(root)
 
-    Label:
+    TrackerButton:
         id: label
-        font_size: 12
+        font_size: 14
+        on_release: Factory.PopupPaint().open()
+
 
     Label:
         id: count_add
-        font_size: 12
+        font_size: 14
         text: '0'
 
-    Button:
+    TrackerButton:
         text: '[b]-[/b]'
         markup: True
         size_hint_x: None
+        width: 60
         on_release: app.root.get_screen('track').subtract_num(root)
 
-    Button:
+    TrackerButton:
         text: '[b]+[/b]'
         markup: True
         size_hint_x: None
+        width: 60
         on_release: app.root.get_screen('track').add_num(root)
-
-# <Tracker>:
-#     count_add: count_add
-#     size_hint_y: None
-#     height: 45
-#     padding: 4
-
-#     LeftButton:
-#         text: '[b]X[/b]'
-#         markup: True
-#         size_hint_x: None
-#         width: 60
-#         on_release: app.root.get_screen('track').delete_storage(root)
-
-#     LeftCenterLabel:
-#         id: label
-#         font_size: 20
-
-#     CenterLabel:
-#         id: count_add
-#         font_size: 20
-#         text: '0'
-
-#     CenterButton:
-#         text: '[b]-[/b]'
-#         markup: True
-#         size_hint_x: None
-#         width: 60
-#         on_release: app.root.get_screen('track').subtract_num(root)
-
-#     RightButton:
-#         text: '[b]+[/b]'
-#         markup: True
-#         size_hint_x: None
-#         width: 60
-#         on_release: app.root.get_screen('track').add_num(root)
