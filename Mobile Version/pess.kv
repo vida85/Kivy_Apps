@@ -1,0 +1,373 @@
+#:import rgba kivy.utils.get_color_from_hex
+
+<Label>:
+	font_size: '17dp'
+
+<MenuButton@ButtonBehavior+Label>:
+    canvas.before:
+        Color:
+            rgba: 0.1, 0.5, 0.7, 1
+        Ellipse:
+            pos: self.pos
+            size: self.height, self.height
+        Ellipse:
+            pos: self.x + self.width - self.height, self.y
+            size: self.height, self.height
+        Rectangle:
+            pos: self.x + self.height / 2, self.y
+            size: self.width - self.height, self.height
+
+<FloatButton@ButtonBehavior+FloatLayout>:
+    id: float_root
+    size_hint: (None, None)
+    text: ''
+    btn_size: (150,150)
+    size: (150,150)
+    bg_color: (0.1, 0.5, 0.7, 1)
+    Button:
+        text: float_root.text
+        font_size: '14dp'
+        #allow_stretch: True
+        markup: True
+        size_hint: (None, None)
+        size: float_root.btn_size
+        pos_hint: {'x': .2, 'y': .1}
+        background_normal: ''
+        background_color: (0,1,0,0)
+        canvas.before:
+            Color:
+                rgba: float_root.bg_color
+            Ellipse:
+                pos: self.pos
+                size: self.size
+
+<TrackerButton@Button>:
+    background_color: 0,0,0,0
+
+
+<ScreenGenerator>:
+    Menu:
+        name: 'menu'
+    Trackers:
+        name: 'track'
+    PessQuestions:
+        name: 'pess'
+
+<Menu>:
+    BoxLayout:
+        orientation: 'vertical'
+        padding: 10
+        spacing: 10
+        Image:
+            source: 'book.png'
+            allow_strech: True
+        Label:
+            canvas.before:
+                Color: 
+                    rgba: (1,1,1,.7)
+                Rectangle:
+                    size: self.size
+                    pos: self.pos
+            size_hint_y: None
+            height: 1
+        MenuButton:
+            text: 'Enter Trackers'
+            height: 60
+            size_hint_y: None
+            background_image: ''
+            background_color: rgba('#637075')
+            on_release: app.root.current = 'track'
+        MenuButton:
+            text: 'Enter PESS'
+            height: 60
+            size_hint_y: None
+            background_image: ''
+            background_color: rgba('#637075')
+            on_release: app.root.current = 'pess'
+        Label:
+            canvas.before:
+                Color: 
+                    rgba: (1,1,1,.7)
+                Rectangle:
+                    size: self.size
+                    pos: self.pos
+            size_hint_y: None
+            height: 1
+        Label:
+            id: time
+            text: ''
+            markup: True
+
+<PessQuestions>:
+    BoxLayout:
+        orientation: 'vertical'
+        pos_hint: {'top': 1}
+        ActionBar:
+            height: self.minimum_height + 100
+            size_hint_y: None
+            background_image: ''
+            background_color: rgba('#0B3242')
+            ActionView:
+                ActionPrevious:
+                    title: '[b]PESS[/b]'
+                    font_size: '17dp'
+                    color: rgba('#AFB7BA')
+                    markup: True
+                    on_release: app.root.current = 'track'
+                ActionButton:
+                    text: 'SEND'
+                    color: rgba('#AFB7BA')
+                    on_release: app.root.get_screen('track').send()
+                ActionButton:
+                    text: 'TRACKER'
+                    color: rgba('#AFB7BA')
+                    on_release: app.root.current = 'track'
+
+        BoxLayout:
+            orientation: 'vertical'
+            padding: 20
+            spacing: 30
+            pos_hint: {'top': 1}
+
+            TextInput:
+                id: phy_text
+                hint_text: 'Physical'
+                size_hint_y: None
+                height: self.minimum_height + 10
+                multiline: False
+            TextInput:
+                id: emo_text
+                hint_text: 'Emotional'
+                size_hint_y: None
+                height: self.minimum_height + 10
+                multiline: False
+            TextInput:
+                id: spi_text
+                hint_text: 'Spiritual'
+                size_hint_y: None
+                height: self.minimum_height + 10
+                multiline: False
+            TextInput:
+                id: sex_text
+                hint_text: 'Sexual'
+                size_hint_y: None
+                height: self.minimum_height + 10
+                multiline: False
+            MenuButton:
+                text: 'Save PESS'
+                height: 80
+                size_hint_y: None
+                background_image: ''
+                on_release: app.root.get_screen('track').savePESS(root)
+
+            MenuButton:
+                text: 'Clear PESS'
+                height: 80
+                size_hint_y: None
+                background_image: ''
+                on_release: root.resetPESS()
+            
+            Label:
+        		canvas.before:
+            		Color: 
+                		rgba: (1,1,1,.7)
+            		Rectangle:
+                		size: self.size
+                		pos: self.pos
+        		size_hint_y: None
+        		height: 1
+        		
+            Label:
+                text: '[b]Physical, Emotional, Spiritual, Sexual[/b] | These principles when lived with a full purpose of heart will invite the Holy Ghost into your lives.'
+                markup: True
+                text_size: self.width, None
+                size_hint: 1, None
+                height: self.texture_size[1]
+            Label:
+            	id: pess_date
+            	text: ''
+            	markup: True
+            
+            Label:
+        		canvas.before:
+            		Color: 
+                		rgba: (1,1,1,.7)
+            		Rectangle:
+                		size: self.size
+                		pos: self.pos
+        		size_hint_y: None
+        		height: 1
+
+<Trackers>:
+    BoxLayout:
+        orientation: 'vertical'
+        ActionBar:
+            height: self.minimum_height + 100
+            size_hint_y: None
+            background_image: ''
+            background_color: rgba('#0B3242')
+            ActionView:
+                ActionPrevious:
+                    title: '[b]TRACKERS[/b]'
+                    font_size: '17dp'
+                    color: rgba('#AFB7BA')
+                    markup: True
+                    on_release: app.root.current = 'pess'
+                ActionButton:
+                    text: 'RESET'
+                    color: rgba('#AFB7BA')
+                    on_release: root.reset()
+                ActionButton:
+                    text: 'SEND'
+                    color: rgba('#AFB7BA')
+                    on_release: root.send()
+                ActionButton:
+                    text: 'PESS'
+                    color: rgba('#AFB7BA')
+                    on_release: app.root.current = 'pess'
+        ScrollView:
+            BoxLayout:
+                id: track
+                orientation: 'vertical'
+                padding: 20
+                spacing: 35
+                size_hint_y: None
+                height: self.minimum_height
+        BoxLayout:
+            size_hint_y: None
+            height: 0
+            padding: 40
+            FloatButton:
+                #source: "plus.png"
+                #size_hint_x: 0.4
+                on_release: root.addWidget()
+
+
+<Tracker>:
+    count_add: count_add
+    label: label
+    size_hint_y: None
+    height: 120
+    
+
+    canvas.before:
+        Color:
+            rgba: 0.1, 0.5, 0.7, 1
+        Rectangle:
+            pos: self.pos[0] + self.height/2, self.pos[1]
+            size: self.size[0] - self.height, self.height
+        Ellipse:
+            pos: self.pos[0], self.pos[1]
+            size: self.height, self.height
+        Ellipse:
+            pos: self.pos[0] + self.width - self.height, self.pos[1]
+            size: self.height, self.height
+
+    TrackerButton:
+        text: '[b]X[/b]'
+        markup: True
+        size_hint_x: None
+        width: 60
+        color: 1, 1, 1, .4
+        on_release: app.root.get_screen('track').delete_storage(root)
+
+	Label:
+        canvas.before:
+            Color: 
+                rgba: (1,1,1,.7)
+            Rectangle:
+                size: self.size
+                pos: self.pos
+        size_hint_x: None
+        width: 1
+
+    TrackerButton:
+        id: label
+        font_size: '16dp'
+
+    Label:
+        id: count_add
+        font_size: '16dp'
+        text: '0'
+
+    TrackerButton:
+        text: '[b]-[/b]'
+        markup: True
+        size_hint_x: None
+        width: 60
+        on_release: app.root.get_screen('track').subtract_num(root)
+        
+	Label:
+        canvas.before:
+            Color: 
+                rgba: (1,1,1,.7)
+            Rectangle:
+                size: self.size
+                pos: self.pos
+        size_hint_x: None
+        width: 1
+
+    TrackerButton:
+        text: '[b]+[/b]'
+        markup: True
+        size_hint_x: None
+        width: 60
+        on_release: app.root.get_screen('track').add_num(root)
+
+
+
+# <PopupPaint@Popup>:
+#         BoxLayout:
+#             orientation: 'horizontal'
+#             padding: 2
+#             spacing: 2
+#             x: 0
+#             y: 0
+#             width: root.width
+#             height: 40
+
+#             ColorButton:
+#                 background_color: C('#2980b9')
+#                 state: 'down'
+
+#             ColorButton:
+#                 background_color: C('#16a085')
+
+#             ColorButton:
+#                 background_color: C('#27ae60')
+
+#             ColorButton:
+#                 background_color: C('#f39c12')
+
+#             ColorButton:
+#                 background_color: C('#d35400')
+
+#             ColorButton:
+#                 background_color: C('#c0392b')
+
+#             ColorButton:
+#                 background_color: C('#8e44ad')
+
+#             ColorButton:
+#                 background_color: C('#bdc3c7')
+
+#             ColorButton:
+#                 background_color: C('#7f8c8d')
+
+#             ColorButton:
+#                 background_color: C('#2c3e50')
+
+#             ColorButton:
+#                 background_color: C('#3498db')
+
+#             ColorButton:
+#                 background_color: C('#1abc9c')
+
+#             ColorButton:
+#                 background_color: C('#2ecc71')
+
+#             ColorButton:
+#                 background_color: C('#f1c40f')
+
+#             ColorButton:
+#                 background_color: C('#e67e22')
