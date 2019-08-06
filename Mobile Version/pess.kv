@@ -46,11 +46,57 @@
 
 
 <ScreenGenerator>:
+    Menu:
+        name: 'menu'
     Trackers:
         name: 'track'
     PessQuestions:
         name: 'pess'
-        
+
+<Menu>:
+    BoxLayout:
+        orientation: 'vertical'
+        padding: 10
+        spacing: 10
+        Image:
+            source: 'book.png'
+            allow_strech: True
+        Label:
+            canvas.before:
+                Color: 
+                    rgba: (1,1,1,.7)
+                Rectangle:
+                    size: self.size
+                    pos: self.pos
+            size_hint_y: None
+            height: 1
+        MenuButton:
+            text: 'Enter Trackers'
+            height: 60
+            size_hint_y: None
+            background_image: ''
+            background_color: rgba('#637075')
+            on_release: app.root.current = 'track'
+        MenuButton:
+            text: 'Enter PESS'
+            height: 60
+            size_hint_y: None
+            background_image: ''
+            background_color: rgba('#637075')
+            on_release: app.root.current = 'pess'
+        Label:
+            canvas.before:
+                Color: 
+                    rgba: (1,1,1,.7)
+                Rectangle:
+                    size: self.size
+                    pos: self.pos
+            size_hint_y: None
+            height: 1
+        Label:
+            id: time
+            text: ''
+            markup: True
 
 <PessQuestions>:
     BoxLayout:
@@ -82,7 +128,7 @@
             padding: 20
             spacing: 30
             pos_hint: {'top': 1}
-            
+
             TextInput:
                 id: phy_text
                 hint_text: 'Physical'
@@ -132,11 +178,13 @@
         		height: 1
         		
             Label:
-                text: '[b]Physical, Emotional, Spiritual, Sexual[/b]/nThese principles when lived with a full purpose/nof heart will invite the Holy Ghost into your lives.'
+                text: '[b]Physical, Emotional, Spiritual, Sexual[/b] | These principles when lived with a full purpose of heart will invite the Holy Ghost into your lives.'
                 markup: True
-                
+                text_size: self.width, None
+                size_hint: 1, None
+                height: self.texture_size[1]
             Label:
-            	id: menu_date
+            	id: pess_date
             	text: ''
             	markup: True
             
@@ -169,10 +217,10 @@
                     text: 'RESET'
                     color: rgba('#AFB7BA')
                     on_release: root.reset()
-                #ActionButton:
-                    #text: 'SEND'
-                    #color: rgba('#AFB7BA')
-                    #on_release: root.send()
+                ActionButton:
+                    text: 'SEND'
+                    color: rgba('#AFB7BA')
+                    on_release: root.send()
                 ActionButton:
                     text: 'PESS'
                     color: rgba('#AFB7BA')

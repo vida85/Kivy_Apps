@@ -10,6 +10,7 @@ from kivy.uix.button import Button
 from kivy.uix.colorpicker import ColorPicker
 from kivy.properties import ObjectProperty
 from kivy.uix.textinput import TextInput
+from kivy.clock import Clock
 
 import json
 import os
@@ -22,9 +23,17 @@ class ScreenGenerator(ScreenManager):
     pass
 
 
+class Menu(Screen):
+    def __init__(self, **kwargs):
+        super().__init__()
+
+    def on_pre_enter(self):
+        self.ids.time.text = strftime('[size=48][b]%A[/b][/size]\n%B %Y')
+
+
 class PessQuestions(Screen):
 	def on_pre_enter(self):
-		self.ids.menu_date.text = strftime('[size=24][b]%A[/b][/size], %B %Y')
+		self.ids.pess_date.text = strftime('[b]%A[/b], %B %Y')
 	
 	def resetPESS(self):
 		self.ids.phy_text.text = ''
@@ -32,10 +41,8 @@ class PessQuestions(Screen):
 		self.ids.spi_text.text = ''
 		self.ids.sex_text.text = ''
 
-class Trackers(Screen):
-    def __init__(self, **kwargs):
-        super().__init__()
 
+class Trackers(Screen):
     storage = {}
     pess_storage = {'physical': None, 'emotional': None, 'spiritual': None, 'sexual': None}
     path = ''
