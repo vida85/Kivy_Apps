@@ -6,6 +6,7 @@ from kivy.uix.screenmanager import ScreenManager, Screen
 from kivy.uix.behaviors import ButtonBehavior
 from kivy.uix.popup import Popup
 from kivy.animation import Animation
+from kivy.uix.label import Label
 from kivy.uix.button import Button
 from kivy.uix.colorpicker import ColorPicker
 from kivy.properties import ObjectProperty
@@ -25,10 +26,10 @@ class ScreenGenerator(ScreenManager):
 
 class Menu(Screen):
     def __init__(self, **kwargs):
-        super().__init__()
+    	super().__init__()
 
     def on_pre_enter(self):
-        self.ids.time.text = strftime('[size=48][b]%A[/b][/size]\n%B %Y')
+    	self.ids.time.text = strftime('[size=48][b]%A[/b][/size]\n%B %Y')
 
 
 class PessQuestions(Screen):
@@ -66,21 +67,41 @@ class Trackers(Screen):
         self.ids.track.remove_widget(tracker)
         del self.storage[tracking]
         self.saveData()
-
-    def reset(self): ##### <------- Problems, Not working ########
+		
+    def reset(self):
         for t in self.storage.keys():
             self.storage[t] = '0'
         self.saveData()
         self.ids.track.clear_widgets()
-        self.on_pre_leave()
+        #self.on_pre_leave()
         self.on_pre_enter()
+    
+    def reset_pop(self):
+    	box = BoxLayout(orientation='vertical', padding=40, spacing=40)
+    	pop = Popup(title='Reset!', content=box, size_hint=(None,None), size=(self.height / 2, self.width / 2))
+    	
+    	info = Label(text='Are you sure you want to reset all counters to 0?')
+    	yes = Button(text='yes'.upper(), on_release=lambda *args :self.reset(), size_hint=(None,None),
+    				size=(self.width / 2, self.width / 9))
+    	no = Button(text='no'.upper(), on_release=pop.dismiss, size_hint=(None,None),
+    				size=(self.width / 2, self.width / 9))
+    	
+    	box.add_widget(info)
+    	box.add_widget(yes)
+    	box.add_widget(no)
+    	
+    	pop.open()
 
     def savePESS(self, PESS):
         self.pess_storage['physical'] = PESS.ids.phy_text.text
         self.pess_storage['emotional'] = PESS.ids.emo_text.text
         self.pess_storage['spiritual'] = PESS.ids.spi_text.text
         self.pess_storage['sexual'] = PESS.ids.sex_text.text
-        print(self.pess_storage)
+        
+        #PESS.ids.phy_text.text = ''
+        #PESS.ids.emo_text.text = ''
+        #PESS.ids.spi_text.text = ''
+        #PESS.ids.sex_text.text = ''
 
     def saveData(self, *args):
         with open(self.path + 'data.json', 'w') as data:
@@ -98,8 +119,8 @@ class Trackers(Screen):
         box = BoxLayout(orientation= 'vertical', padding=40, spacing=15)
         pop = Popup(title='Tracker: Name', content=box, size_hint=(None,None), height=(self.width / 2), width=(self.width))
 
-        text_input = TextInput(hint_text='Add Trackers', multiline=False, size_hint=(None, None), width=(self.width / 1.35))
-        okay = Button(text='Save', size_hint=(None, None), width=(self.width / 2), on_press=lambda *args :self.addit(text_input.text), on_release=pop.dismiss)
+        text_input = TextInput(hint_text='Add Trackers', multiline=False, size_hint=(None, None), width=(self.width / 1.18))
+        okay = Button(text='Save', size_hint=(None, None), width=(self.width / 1.18), on_press=lambda *args :self.addit(text_input.text), on_release=pop.dismiss)
 
         box.add_widget(text_input)
         box.add_widget(okay)
@@ -132,13 +153,20 @@ class Trackers(Screen):
         self.storage[tracker.ids.label.text] = str(int(tracker.ids.count_add.text))
         print(self.storage)
         self.saveData()
-
+        
+    def color_picker(self, label):
+    	box = BoxLayout(orientation='vertical', padding=60, spacing=40)
+    	pop = Popup(title='Color Picker', content=box, size_hint=(None,None), size=(self.height / 2, self.width / 2))
+    	color = Button(text='color')
+    	box.add_widget(color)
+    	pop.open()
+	
     def send(self):
         os.chdir(r'/storage/emulated/0/Python_Prj/kivy_apps/PESS')
         with open('bat', 'r') as bat:
             login = bat.read()
             me = self.email['davi']
-            recipient = self.email['davi']
+            recipient = self.email['kevin']
             day = strftime("%a, %b %d, %Y")
             tracker_message = 'PESS\n'
             subject_message = f"Subject: PESS {day}"
@@ -157,18 +185,15 @@ class Trackers(Screen):
             smtp_obj.login(me, login)
             smtp_obj.sendmail(me, recipient, message) #  send email
             smtp_obj.quit()
-            #self.sent_confirmation()
+            self.sent_confirmation(recipient)
 
-    '''
-    def sent_confirmation(self): # <----- not working "AssertionError: None is not callable"
-        recipient = self.email['davi']
-        box = BoxLayout(orientation= 'vertical', padding=40, spacing=5)
-        pop = Popup(title=f'Congrats, {recipient} has recieved an email.', content=box, size_hint=(None,None), size=(300,300))
-        exit_app = Button(text='Exit App', on_release=App.get_running_app().stop())
-        box.add_widget(exit_app)
-        pop.open()
-        self.saveData()
-    '''
+    def sent_confirmation(self, recipient):
+    	box = BoxLayout(orientation='vertical', padding=40, spacing=5)
+    	pop = Popup(title='Email Sent', content=box, size_hint=(None,None), size=(self.width, self.width/2))
+    	info = Label(text=f'Congrats, {recipient} has recieved an email.')
+    	box.add_widget(info)
+    	pop.open()
+    	self.saveData()
 
 class Tracker(BoxLayout):
     def __init__(self, text='', number='', data={}, **kwargs):
