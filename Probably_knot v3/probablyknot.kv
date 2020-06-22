@@ -1,0 +1,68 @@
+<Manager>:
+    Main:
+        name: 'main'
+    Analyzer:
+        name: 'analyzer'
+
+
+<Main>:
+    MDToolbar:
+        id: toolbar
+        title: "Probably Knot"
+        pos_hint: {'top':1.0}
+        md_bg_color: app.theme_cls.accent_color
+
+    MDBoxLayout:
+        size_hint: 1, None
+        height: self.minimum_height
+        y: root.height - toolbar.height - self.height
+        orientation: 'vertical'
+
+        MDTextField:
+            id: sentence
+            icon_right: "book-open-outline"
+            icon_right_color: app.theme_cls.primary_color
+
+            hint_text: "Enter Sentence"
+            helper_text: "Write a problem statement to analyze"
+            helper_text_mode: "on_focus"
+            pos_hint: {'center_x': 0.5, 'top': 0.7}
+            size_hint_x: None
+            width: 400
+
+        MDTextField:
+            id: word
+            icon_right: "lead-pencil"
+            icon_right_color: app.theme_cls.primary_color
+
+            hint_text: "Enter Word"
+            helper_text: "Write ONE word from the above sentence"
+            helper_text_mode: "on_focus"
+            pos_hint: {'center_x': 0.5, 'center_y': 0.6}
+            size_hint_x: None
+            width: 400
+
+        MDIconButton:
+            icon: "card-plus"
+            pos_hint: {'center_x': 0.75, 'center_y': 0.5}
+            on_press: app.root.get_screen('analyzer').analyze(root)
+            on_release: app.root.current = 'analyzer'
+
+        MDRectangleFlatButton:
+            text: "help"
+            pos_hint: {'center_x': 0.75, 'center_y': 0.5}
+            on_release: app.root.get_screen('main').show_data()
+
+
+<Analyzer>:
+    BoxLayout:
+        orientation: 'vertical'
+        MDToolbar:
+            id: toolbar
+            title: "Probably Knot"
+            pos_hint: {'top':1.0}
+            md_bg_color: app.theme_cls.accent_color
+            right_action_items: ['step-backward', lambda x: app.root.get_screen('main')]
+        ScrollView:
+            MDList:
+                id: container
