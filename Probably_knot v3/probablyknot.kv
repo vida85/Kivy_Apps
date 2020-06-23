@@ -14,6 +14,7 @@
             id: toolbar
             title: "Probably Knot v3"
             md_bg_color: app.theme_cls.primary_color
+            elevation: 10
             right_action_items: [["help-circle-outline", lambda x: app.root.get_screen('main').show_data()]]
         MDFloatLayout:
             MDTextField:
@@ -40,10 +41,11 @@
                 pos_hint: {'center_x': 0.5, 'center_y': 0.6}
                 size_hint_x: None
                 width: root.width - dp(20)
-            MDIconButton:
+            MDFloatingActionButton:
                 icon: "brain"
                 pos_hint: {'center_x': 0.5, 'center_y': 0.4}
                 user_font_size: 64
+                elevation_normal: 12
                 on_press: app.root.get_screen('analyzer').analyze(root)
                 on_release: app.root.current = 'analyzer'
 
@@ -59,8 +61,12 @@
         MDToolbar:
             id: toolbar
             title: "Probably Knot v3"
-            md_bg_color: app.theme_cls.accent_color
-            right_action_items: [["backburger", lambda x: main.change_screen(root)], ["help-circle-outline", lambda x: app.root.get_screen('main').show_data()]]
+            md_bg_color: app.theme_cls.primary_color
+            elevation: 10
+            MDIconButton:
+                icon: 'backspace'
+                md_bg_color: app.theme_cls.primary_color
+                on_release: app.root.current = 'main'
         ScrollView:
             MDList:
                 id: container

@@ -48,6 +48,11 @@ class Main(Screen):
 
 
 class Analyzer(Screen):
+    def on_leave(self):
+        # print(dir(self.ids.container))
+        self.ids.container.clear_widgets()
+
+
     def analyze(self, main): # main is pointing to ---> Main().show_data()
         """Analyse data with PyDictionary"""
 
@@ -93,30 +98,12 @@ class Analyzer(Screen):
                     for word in final_set:
                         item = TwoLineListItem(text=f"{sent.replace(wrd, word)}", secondary_text=f"{word}")
                         self.ids.container.add_widget(item)
-                    # try:
-                    #     for num, w in enumerate(j['adjective']['syn'], 1):
-                    #         item = OneLineListItem(text=f"{num}: {sent.replace(wrd, w)}\n")
-                    #         self.ids.container.add_widget(item)
-                    # except KeyError:
-                    #     print(f'Adjective for "{wrd}" is not found.')
-                    # try:
-                    #     for num, w in enumerate(j['noun']['syn'], 1):
-                    #         item = OneLineListItem(text=f"{num}: {sent.replace(wrd, w)}\n")
-                    #         self.ids.container.add_widget(item)
-                    # except KeyError:
-                    #     print(f'Noun for "{wrd}" is not found.') 
-                    # try:
-                    #     for num, w in enumerate(j['verb']['syn'], 1):
-                    #         item = OneLineListItem(text=f"{num}: {sent.replace(wrd, w)}\n")
-                    #         self.ids.container.add_widget(item)
-                    # except KeyError:
-                    #     print(f'Verb for "{wrd}" is not found.')
 
 
 class ProbablyKnotApp(MDApp):
     def build(self):
         self.theme_cls = ThemeManager()
-        self.theme_cls.theme_style = "Dark"
+        self.theme_cls.theme_style = "Light"
         self.theme_cls.primary_palette = "Amber"
         self.theme_cls.primary_hue = "A700"
 
