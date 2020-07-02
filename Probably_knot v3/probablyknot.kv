@@ -17,19 +17,26 @@
             elevation: 9
             left_action_items: [["help-circle-outline", lambda x: app.root.get_screen('main').open_dialog()]]
             right_action_items: [["chevron-right", lambda x: app.change_screen('analyzer')]]
-        MDFloatLayout:
+        MDBoxLayout:
+            orientation: 'vertical'
+            padding: 20
             MDTextField:
                 id: sentence
                 icon_right: "book-open-outline"
                 icon_right_color: app.theme_cls.primary_color
 
-                hint_text: "Enter Sentence"
+                hint_text: "type sentence"
                 helper_text: "Write a problem statement to analyze"
                 helper_text_mode: "on_focus"
                 multiline: False
                 pos_hint: {'center_x': 0.5, 'center_y': 0.7}
                 size_hint_x: None
                 width: root.width - dp(30)
+            MDLabel:
+                text: 'select word to [b]analyze[/b]'
+                markup: True
+                size_hint_x: None
+                pos_hint: {'y': 1, 'center_x': .5}
             # MDTextField:
             #     id: word
             #     icon_right: "lead-pencil"
@@ -75,10 +82,10 @@
             md_bg_color: app.theme_cls.primary_dark
             elevation: 10
             right_action_items: [["chevron-left", lambda x: app.change_screen('main')]]
-            # MDIconButton:
-            #     icon: 'backspace'
-            #     #md_bg_color: app.theme_cls.primary_color
-            #     on_release: app.root.current = 'main'
+            MDIconButton:
+                icon: 'dictionary'
+                md_bg_color: app.theme_cls.primary_dark
+                on_release: app.root.get_screen('analyzer').define()
         ScrollView:
             MDList:
                 id: container

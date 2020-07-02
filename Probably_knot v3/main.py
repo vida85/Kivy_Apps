@@ -71,7 +71,7 @@ class Main(Screen):
             print(idx, word)
             c = MDChip(label=word,
                        callback=self.do_something,
-                       icon='home-analytics',
+                       #icon='home-analytics',
                        selected_chip_color=theme_cls.accent_color,
                        )
             self.ids.stack.add_widget(c)
@@ -93,6 +93,23 @@ class Analyzer(Screen):
         # print(dir(self.ids.container))
         self.ids.container.clear_widgets()
 
+    def define(self):
+        definition = ''
+        wrd = LIST[-1].lower()
+        # Definition Section #
+        dictionary = PyDictionary()
+        define_wrd = dictionary.meaning(wrd)
+        for key, value in define_wrd.items():
+            for words in value:
+                definition += f"{words}, "
+        theme_cls = ThemeManager()
+        self.dialog_one = MDDialog(
+                                title=f"Definition: {wrd}",
+                                text=definition,
+                                buttons=[
+                                    MDFlatButton(
+                                        text="CLOSE", text_color=theme_cls.primary_color),])
+        self.dialog_one.open()
 
     def analyze(self, main): # main is pointing to ---> Main().show_data()
         """Analyse data with PyDictionary"""
@@ -102,10 +119,6 @@ class Analyzer(Screen):
             self.empty()
         else:
             wrd = LIST[-1].lower()
-
-            # Definition Section #
-            dictionary = PyDictionary()
-            define_wrd = dictionary.meaning(wrd)
 
             if wrd != '' and sent != '':
                 API_KEY = 'a701e74e453ee6695e450310340401f5'
