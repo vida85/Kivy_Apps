@@ -64,25 +64,20 @@ class Main(Screen):
         self.dialog.open()
 
     def call(self, *args):
+        theme_cls = ThemeManager()
         self.ids.stack.clear_widgets()
         sent = self.ids.sentence.text.lower()
-        for word in sent.split():
+        for idx, word in enumerate(sent.split()):
+            print(idx, word)
             c = MDChip(label=word,
                        callback=self.do_something,
-                       icon='checkbox-blank-outline',
-                       color=[.1, .1, .1, .5],
+                       icon='home-analytics',
+                       selected_chip_color=theme_cls.accent_color,
                        )
             self.ids.stack.add_widget(c)
-        LIST = []
 
     def do_something(self, inst, word, *args):
-        theme_cls = ThemeManager()
-        if inst.icon == 'checkbox-marked-outline':
-            inst.icon = 'checkbox-blank-outline'
-            inst.color = [.1, .1, .1, .5]
-        else:
-            inst.icon = 'checkbox-marked-outline'
-            inst.color = theme_cls.primary_color
+        self.ids.analyze_btn.disabled = False
 
         LIST.append(word)
         return LIST
@@ -103,57 +98,64 @@ class Analyzer(Screen):
         """Analyse data with PyDictionary"""
 
         sent = main.ids.sentence.text.lower()
-        wrd = LIST[0].lower()
+        if LIST == []:
+            self.empty()
+        else:
+            wrd = LIST[-1].lower()
 
-        # Definition Section #
-        dictionary = PyDictionary()
-        define_wrd = dictionary.meaning(wrd)
+            # Definition Section #
+            dictionary = PyDictionary()
+            define_wrd = dictionary.meaning(wrd)
 
-        if wrd != '' and sent != '':
-            API_KEY = 'a701e74e453ee6695e450310340401f5'
-            URL = f'http://words.bighugelabs.com/api/2/{API_KEY}/{wrd}/json'
+            if wrd != '' and sent != '':
+                API_KEY = 'a701e74e453ee6695e450310340401f5'
+                URL = f'http://words.bighugelabs.com/api/2/{API_KEY}/{wrd}/json'
 
-            if wrd not in sent:
-                error = MDDialog(title="Error", text=f"Word: '{wrd}' is not in\n\n'{sent}'")
-                error.open()
-            else:
-                r = requests.get(URL) # get's url json file
-                try:
-                    j = json.loads(r.text) # loads json into 'j' as a dict
-                    print(len(j['noun']['syn']), j)
-                except:
-                    j = {''}
-                if type(j) == dict: # check is 'j' variable is coming in as a Dict holds the new sentences new = f"{result}\n"
-                    final_set = set()
+                if wrd not in sent:
+                    error = MDDialog(title="Error", text=f"Word: '{wrd}' is not in\n\n'{sent}'")
+                    error.open()
+                else:
+                    r = requests.get(URL) # get's url json file
                     try:
-                        for w in j['adjective']['syn']:
-                            final_set.add(w)
-                    except KeyError:
-                        print(f'Adjective for "{wrd}" is not found.')
-                    try:
-                        for w in j['noun']['syn']:
-                            final_set.add(w)
-                    except KeyError:
-                        print(f'Noun for "{wrd}" is not found.') 
-                    try:
-                        for w in j['verb']['syn']:
-                            final_set.add(w)
-                    except KeyError:
-                        print(f'Verb for "{wrd}" is not found.')
-                    item = TwoLineListItem(text=f"Original: {sent}", secondary_text=f"{wrd}")
-                    self.ids.container.add_widget(item)
-                    for word in final_set:
-                        item = TwoLineListItem(text=f"{sent.replace(wrd, word)}", secondary_text=f"{word}")
+                        j = json.loads(r.text) # loads json into 'j' as a dict
+                        print(len(j['noun']['syn']), j)
+                    except:
+                        j = {''}
+                    if type(j) == dict: # check is 'j' variable is coming in as a Dict holds the new sentences new = f"{result}\n"
+                        final_set = set()
+                        try:
+                            for w in j['adjective']['syn']:
+                                final_set.add(w)
+                        except KeyError:
+                            print(f'Adjective for "{wrd}" is not found.')
+                        try:
+                            for w in j['noun']['syn']:
+                                final_set.add(w)
+                        except KeyError:
+                            print(f'Noun for "{wrd}" is not found.') 
+                        try:
+                            for w in j['verb']['syn']:
+                                final_set.add(w)
+                        except KeyError:
+                            print(f'Verb for "{wrd}" is not found.')
+                        item = TwoLineListItem(text=f"Original: {sent}", secondary_text=f"{wrd}")
                         self.ids.container.add_widget(item)
+                        for word in final_set:
+                            item = TwoLineListItem(text=f"{sent.replace(wrd, word)}", secondary_text=f"{word}")
+                            self.ids.container.add_widget(item)
+            else:
+                self.empty()
 
     def empty(self, *args):
+        print("I made it -- empty dialog")
+        theme_cls = ThemeManager()
         self.dialog_one = MDDialog(
-            text="First screen dialog",
-            buttons=[
-                MDFlatButton(
-                    text="CANCEL", text_color=self.theme_cls.primary_color),
-                MDFlatButton(
-                    text="DISCARD", text_color=self.theme_cls.primary_color)])
+                                text="First screen dialog",
+                                buttons=[
+                                    MDFlatButton(
+                                        text="CANCEL", text_color=theme_cls.primary_color),
+                                    MDFlatButton(
+                                        text="DISCARD", text_color=theme_cls.primary_color)])
         self.dialog_one.open()
 
 

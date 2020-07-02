@@ -29,7 +29,7 @@
                 multiline: False
                 pos_hint: {'center_x': 0.5, 'center_y': 0.7}
                 size_hint_x: None
-                width: root.width - dp(20)
+                width: root.width - dp(30)
             # MDTextField:
             #     id: word
             #     icon_right: "lead-pencil"
@@ -42,20 +42,26 @@
             #     pos_hint: {'center_x': 0.5, 'center_y': 0.6}
             #     size_hint_x: None
             #     width: root.width - dp(20)
+        MDSeparator:
+
         MDStackLayout:
-            id: stack
             orientation: 'lr-tb'
-            pos_hint: {'center_x': 0.5, 'center_y': 0.6}
+            pos_hint: {'center_x': 0.5, 'center_y': 1}
             padding: dp(15)
             spacing: dp(5)
+
+            MDChooseChip:
+                id: stack
         MDFloatLayout:
             MDFloatingActionButton:
+                id: analyze_btn
                 icon: "brain"
                 # md_bg_color: app.theme_cls.primary_light
                 md_bg_color: app.theme_cls.accent_color
-                pos_hint: {'center_x': 0.5, 'center_y': 0.3}
+                pos_hint: {'center_x': 0.5, 'center_y': 0.6}
                 user_font_size: 64
-                elevation_normal: 9
+                elevation_normal: 10
+                disabled: True
                 on_press: app.root.get_screen('analyzer').analyze(root)
                 on_release: app.root.current = 'analyzer'
 
