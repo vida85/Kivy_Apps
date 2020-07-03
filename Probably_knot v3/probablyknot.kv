@@ -32,25 +32,15 @@
                 pos_hint: {'center_x': 0.5, 'center_y': 0.7}
                 size_hint_x: None
                 width: root.width - dp(30)
-            MDLabel:
-                text: 'select word to [b]analyze[/b]'
-                markup: True
-                size_hint_x: None
-                pos_hint: {'y': 1, 'center_x': .5}
-            # MDTextField:
-            #     id: word
-            #     icon_right: "lead-pencil"
-            #     icon_right_color: app.theme_cls.primary_color
 
-            #     hint_text: "Enter Word"
-            #     helper_text: "Write ONE word from the above sentence"
-            #     helper_text_mode: "on_focus"
-            #     multiline: False
-            #     pos_hint: {'center_x': 0.5, 'center_y': 0.6}
-            #     size_hint_x: None
-            #     width: root.width - dp(20)
         MDSeparator:
 
+        MDLabel:
+            text: 'select word to [b]analyze[/b]'
+            theme_text_color: 'Hint'
+            markup: True
+            size_hint_y: None
+            halign: 'center'
         MDStackLayout:
             orientation: 'lr-tb'
             pos_hint: {'center_x': 0.5, 'center_y': 1}
