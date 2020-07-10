@@ -72,10 +72,10 @@
             md_bg_color: app.theme_cls.primary_dark
             elevation: 10
             right_action_items: [["chevron-left", lambda x: app.change_screen('main')]]
-            MDIconButton:
-                icon: 'dictionary'
-                md_bg_color: app.theme_cls.primary_dark
-                on_release: app.root.get_screen('analyzer').define()
+            # MDIconButton:
+            #     icon: 'dictionary'
+            #     md_bg_color: app.theme_cls.primary_dark
+            #     on_release: app.root.get_screen('analyzer').define()
         ScrollView:
             MDList:
                 id: container

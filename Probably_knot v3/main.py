@@ -1,9 +1,8 @@
-# made by Davi Silveira
-# vidasilveira85@gmail.com
-
-# brain.png was made possible by this guy below, thank you...
-# <div>Icons made by <a href="https://www.flaticon.com/authors/hirschwolf" title="hirschwolf">hirschwolf</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div>
-
+#! /usr/bin/python3
+"""
+made by Davi Silveira -- vidasilveira85@gmail.com
+dot.png was made possible by this guy below, thank you... https://www.flaticon.com/authors/freepik"
+"""
 from kivymd.app import MDApp
 from kivymd.theming import ThemeManager
 from kivymd.uix.dialog import MDDialog
@@ -16,12 +15,17 @@ from kivy.core.window import Window
 from kivy.uix.scrollview import ScrollView
 from kivymd.uix.expansionpanel import MDExpansionPanel, MDExpansionPanelTwoLine
 
-from PyDictionary import PyDictionary
 import sys
 import json
 import requests
+import os
+PATH = os.path.dirname(os.path.abspath(__file__))
 
-PATH = r"C:\Users\vidas\Documents\01_Python_Apps\Kivy Apps\youtube_tuts\Material_APP\Probably_knot v3\version 2"
+import nltk
+nltk.download('wordnet', '/usr/local/share//nltk_data/')
+nltk.data.path.append('./nltk_data/')
+from nltk.corpus import wordnet
+
 LIST = []
 
 MESSAGE = """
@@ -56,7 +60,8 @@ class Main(Screen):
     #     return super().on_touch_down(touch)
 
     def navigation_draw(self):
-        print("navigation")
+        pass
+        #print("navigation")
 
     def close_dialog(self, obj):
         self.dialog.dismiss()
@@ -74,7 +79,7 @@ class Main(Screen):
         self.ids.stack.clear_widgets()
         sent = self.ids.sentence.text.lower()
         for idx, word in enumerate(sent.split()):
-            print(idx, word)
+            #print(idx, word)
             c = MDChip(label=word,
                        callback=self.do_something,
                        icon='check-network-outline',
@@ -92,31 +97,31 @@ class Analyzer(Screen):
     def on_touch_move(self, touch):
         # print(touch)
         with self.canvas:
-            print(dir(touch.ud))
+            pass
+            #print(dir(touch.ud))
 
     def on_leave(self):
         # print(dir(self.ids.container))
         self.ids.container.clear_widgets()
 
-    def define(self):
-        definition = ''
-        wrd = LIST[-1].lower()
-        # Definition Section #
-        dictionary = PyDictionary()
-        define_wrd = dictionary.meaning(wrd)
-        for key, value in define_wrd.items():
-            for words in value:
-                definition += f"{words}, "
-        theme_cls = ThemeManager()
-        dialog_one = MDDialog(title=f"Definition: {wrd}",
-                              text=definition,
-                              buttons=[MDFlatButton(text="CLOSE",
-                                                    text_color=theme_cls.primary_color),])
-        dialog_one.open()
+    def define(self, *argv):
+        try:
+            wrd = LIST[-1].lower()
+            # Definition Section #
+            word = wordnet.synsets(wrd)
+
+            theme_cls = ThemeManager()
+            dialog_one = MDDialog(title=f"Definition:\n{wrd}",
+                                text=str(word[0].definition()),
+                                buttons=[MDFlatButton(text="CLOSE",
+                                                        text_color=theme_cls.primary_color),])
+            dialog_one.open()
+        except IndexError:
+            error = MDDialog(title="Definition Error", text=f"No word to define... select word to analyze")
+            error.open()
 
     def analyze(self, main): # main is pointing to ---> Main().show_data()
-        """Analyse data with PyDictionary"""
-
+        """Analyse data with bighugelabs API"""
         sent = main.ids.sentence.text.lower()
         if LIST == []:
             self.empty()
@@ -128,40 +133,51 @@ class Analyzer(Screen):
                 URL = f'http://words.bighugelabs.com/api/2/{API_KEY}/{wrd}/json'
 
                 if wrd not in sent:
-                    print("if wrd not in sent")
+                    #print("if wrd not in sent")
                     error = MDDialog(title="Error", text=f"Word: '{wrd}' is not in\n\n'{sent}'")
                     error.open()
                 else:
-                    print("else...")
+                    #print("else...")
                     r = requests.get(URL) # get's url json file
                     try:
-                        print("j = json...")
+                        #print("j = json...")
                         j = json.loads(r.text) # loads json into 'j' as a dict
                     except KeyError:
-                        print("j = {/}")
+                        #print("j = {/}")
                         j = {''}
                     if type(j) == dict: # check is 'j' variable is coming in as a Dict holds the new sentences new = f"{result}\n"
-                        final_set = set()
+                        words = set()
                         try:
                             for w in j['adjective']['syn']:
-                                final_set.add(w)
+                                words.add(w)
                         except KeyError:
-                            print(f'Adjective for "{wrd}" is not found.')
+                            pass
+                            #print(f'Adjective for "{wrd}" is not found.')
                         try:
                             for w in j['noun']['syn']:
-                                final_set.add(w)
+                                words.add(w)
                         except KeyError:
-                            print(f'Noun for "{wrd}" is not found.') 
+                            pass
+                            #print(f'Noun for "{wrd}" is not found.') 
                         try:
                             for w in j['verb']['syn']:
-                                final_set.add(w)
+                                words.add(w)
                         except KeyError:
-                            print(f'Verb for "{wrd}" is not found.')
-                        item = TwoLineListItem(text=f"Original sentence: {sent}", secondary_text=f"Analyze word: {wrd}")
+                            pass
+                            #print(f'Verb for "{wrd}" is not found.')
+
+                        item = TwoLineListItem(text=f"Original sentence: {sent}", secondary_text=f"Analyze word: {wrd}", on_release=self.define)
                         self.ids.container.add_widget(item)
-                        for word in final_set:
-                            item = TwoLineListItem(text="Original word:", secondary_text=wrd.lower())
-                            content = MDExpansionPanel(icon=f'{PATH}\\dot.png',
+                        for word in words:
+                            w = wordnet.synsets(word) # getting definition from nltk
+                            print(type(w), w)
+                            try:
+                                definition = str(w[0].definition())
+                            except IndexError:
+                                definition = "no definition found..."
+
+                            item = TwoLineListItem(text=f"Definition '{word}': ", secondary_text=definition)
+                            content = MDExpansionPanel(icon=f'{PATH}/dot.png',
                                                        content=item,
                                                        panel_cls=MDExpansionPanelTwoLine(
                                                             text=f"{sent.replace(wrd, word).lower()}",
@@ -169,11 +185,11 @@ class Analyzer(Screen):
                                                         ))
                             self.ids.container.add_widget(content)
             else:
-                print("self.empty")
+                #print("self.empty")
                 self.empty()
 
     def empty(self, *args):
-        print("I made it -- empty dialog")
+        #print("I made it -- empty dialog")
         theme_cls = ThemeManager()
         self.dialog_one = MDDialog(
                                 text="First screen dialog",
