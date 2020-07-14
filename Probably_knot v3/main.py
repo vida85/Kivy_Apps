@@ -15,16 +15,19 @@ from kivy.core.window import Window
 from kivy.uix.scrollview import ScrollView
 from kivymd.uix.expansionpanel import MDExpansionPanel, MDExpansionPanelTwoLine
 
-import sys
+import pathlib
 import json
 import requests
 import os
-PATH = os.path.dirname(os.path.abspath(__file__))
 
-import nltk
-nltk.download('wordnet', '/usr/local/share//nltk_data/')
-nltk.data.path.append('./nltk_data/')
-from nltk.corpus import wordnet
+PATH = os.path.dirname(os.path.abspath(__file__))
+#PATH = "/home/davi/APPs/Probably_knot/"
+
+# import nltk
+# nltk.download('wordnet')
+# #nltk.download('wordnet', f'/usr/local/share/nltk_data/')
+# #nltk.data.path.append('./nltk_data/')
+# from nltk.corpus import wordnet
 
 LIST = []
 
@@ -41,7 +44,7 @@ where once they were misunderstood.
 
 PK re-shuffle a word from an input
 sentence to help rephrase ones 
-orignal sentence. To better
+original sentence. To better
 understand problems and ideas by
 changing the angle of perception
 with more elegant solutions.
@@ -61,7 +64,6 @@ class Main(Screen):
 
     def navigation_draw(self):
         pass
-        #print("navigation")
 
     def close_dialog(self, obj):
         self.dialog.dismiss()
@@ -79,19 +81,17 @@ class Main(Screen):
         self.ids.stack.clear_widgets()
         sent = self.ids.sentence.text.lower()
         for idx, word in enumerate(sent.split()):
-            #print(idx, word)
-            c = MDChip(label=word,
+            chip = MDChip(label=word,
                        callback=self.do_something,
                        icon='check-network-outline',
                        selected_chip_color=theme_cls.accent_color,
                        )
-            self.ids.stack.add_widget(c)
+            self.ids.stack.add_widget(chip)
 
     def do_something(self, inst, word, *args):
         self.ids.analyze_btn.disabled = False
         LIST.append(word)
         return LIST
-
 
 class Analyzer(Screen):
     def on_touch_move(self, touch):
@@ -101,20 +101,31 @@ class Analyzer(Screen):
             #print(dir(touch.ud))
 
     def on_leave(self):
-        # print(dir(self.ids.container))
         self.ids.container.clear_widgets()
+        # LIST == []
+
+    def load_json(self, name):
+        CWD = pathlib.Path(__file__).parent.absolute()
+        with open(f"{CWD}/{name}", "r") as W:
+            words = json.load(W)
+            return words
 
     def define(self, *argv):
         try:
             wrd = LIST[-1].lower()
             # Definition Section #
-            word = wordnet.synsets(wrd)
+            dictionary = self.load_json("dictionary.json")
+            #word = wordnet.synsets(wrd)
 
             theme_cls = ThemeManager()
-            dialog_one = MDDialog(title=f"Definition:\n{wrd}",
-                                text=str(word[0].definition()),
-                                buttons=[MDFlatButton(text="CLOSE",
-                                                        text_color=theme_cls.primary_color),])
+            try:
+                dialog_one = MDDialog(title=f"Definition:\n{wrd}", text=dictionary[wrd.upper()], buttons=[MDFlatButton(text="CLOSE",
+                                                                                                                       text_color=theme_cls.primary_color)])
+            except KeyError:
+                dialog_one = MDDialog(title=f"Definition:\n{wrd}",
+                                      text="No definiton found...",
+                                      buttons=[MDFlatButton(text="CLOSE",
+                                                            text_color=theme_cls.primary_color)])
             dialog_one.open()
         except IndexError:
             error = MDDialog(title="Definition Error", text=f"No word to define... select word to analyze")
@@ -169,12 +180,13 @@ class Analyzer(Screen):
                         item = TwoLineListItem(text=f"Original sentence: {sent}", secondary_text=f"Analyze word: {wrd}", on_release=self.define)
                         self.ids.container.add_widget(item)
                         for word in words:
-                            w = wordnet.synsets(word) # getting definition from nltk
-                            print(type(w), w)
+                            dictionary = self.load_json("dictionary.json")
+                            # w = wordnet.synsets(word) # getting definition from nltk
                             try:
-                                definition = str(w[0].definition())
-                            except IndexError:
-                                definition = "no definition found..."
+                                definition = dictionary[word.upper()]
+                                # definition = str(w[0].definition())
+                            except KeyError:
+                                definition = "No definition found..."
 
                             item = TwoLineListItem(text=f"Definition '{word}': ", secondary_text=definition)
                             content = MDExpansionPanel(icon=f'{PATH}/dot.png',
@@ -185,11 +197,9 @@ class Analyzer(Screen):
                                                         ))
                             self.ids.container.add_widget(content)
             else:
-                #print("self.empty")
                 self.empty()
 
     def empty(self, *args):
-        #print("I made it -- empty dialog")
         theme_cls = ThemeManager()
         self.dialog_one = MDDialog(
                                 text="First screen dialog",
